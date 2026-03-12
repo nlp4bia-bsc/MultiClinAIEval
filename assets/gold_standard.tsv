@@ -1,0 +1,7 @@
+filename	label	start_span	end_span	text
+doc1.txt	DISEASE	10	18	diabetes
+doc1.txt	SYMPTOM	40	45	fever
+doc1.txt	PROCEDURE	60	67	biopsy
+doc2.txt	DISEASE	5	13	influenza
+doc2.txt	SYMPTOM	30	38	headache
+doc2.txt	PROCEDURE	50	57	x-ray
