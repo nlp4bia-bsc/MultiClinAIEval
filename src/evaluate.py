@@ -83,18 +83,45 @@ def strict_match(g, p):
     )
 
 
-def overlap(g, p):
+def safe_prf(precision: float, recall: float):
+
+    if precision + recall:
+        f1 = 2 * precision * recall / (precision + recall)
+    else:
+        f1 = 0.0
+
+    return {
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(f1, 4),
+    }
+
+def char_overlap_f1(g, p):
 
     if g["filename"] != p["filename"]:
-        return False
+        return 0.0
 
     if g["label"] != p["label"]:
-        return False
+        return 0.0
 
-    return max(g["off0"], p["off0"]) < min(g["off1"], p["off1"])
+    inter = max(0, min(g["off1"], p["off1"]) - max(g["off0"], p["off0"]))
+
+    if inter == 0:
+        return 0.0
+
+    gold_len = g["off1"] - g["off0"]
+    pred_len = p["off1"] - p["off0"]
+
+    recall = inter / gold_len
+    precision = inter / pred_len
+
+    if precision + recall == 0:
+        return 0.0
+
+    return 2 * precision * recall / (precision + recall)
 
 
-def compute_metric(gold_docs, pred_docs, partial=False):
+def compute_strict_metric(gold_docs, pred_docs):
 
     tp = 0
     fp = 0
@@ -117,12 +144,7 @@ def compute_metric(gold_docs, pred_docs, partial=False):
                 if pi in matched_p:
                     continue
 
-                if partial:
-                    ok = overlap(g, p)
-                else:
-                    ok = strict_match(g, p)
-
-                if ok:
+                if strict_match(g, p):
                     matched_g.add(gi)
                     matched_p.add(pi)
                     tp += 1
@@ -132,6 +154,47 @@ def compute_metric(gold_docs, pred_docs, partial=False):
         fn += len(gold) - len(matched_g)
 
     return safe_f1(tp, fp, fn)
+
+def compute_char_metric(gold_docs, pred_docs):
+
+    docs = set(gold_docs.keys()) | set(pred_docs.keys())
+
+    gold_scores = []
+    pred_scores = []
+
+    for d in docs:
+
+        gold = gold_docs.get(d, [])
+        pred = pred_docs.get(d, [])
+
+        for g in gold:
+            best_score = 0.0
+
+            for p in pred:
+                score = char_overlap_f1(g, p)
+                if score > best_score:
+                    best_score = score
+
+            gold_scores.append(best_score)
+
+        for p in pred:
+            best_score = 0.0
+
+            for g in gold:
+                score = char_overlap_f1(g, p)
+                if score > best_score:
+                    best_score = score
+
+            pred_scores.append(best_score)
+
+    recall = sum(gold_scores) / len(gold_scores) if gold_scores else 0.0
+    precision = sum(pred_scores) / len(pred_scores) if pred_scores else 0.0
+
+    result = safe_prf(precision, recall)
+    result["n_gold"] = len(gold_scores)
+    result["n_pred"] = len(pred_scores)
+
+    return result
 
 
 def evaluate(reference_path: Path, pred_path: Path, entity=None):
@@ -150,13 +213,13 @@ def evaluate(reference_path: Path, pred_path: Path, entity=None):
     gold_docs = group_by_document(df_gold)
     pred_docs = group_by_document(df_pred)
 
-    strict = compute_metric(gold_docs, pred_docs, partial=False)
-    partial = compute_metric(gold_docs, pred_docs, partial=True)
+    strict = compute_strict_metric(gold_docs, pred_docs)
+    char_f1 = compute_char_metric(gold_docs, pred_docs)
 
     return {
         "entity": entity,
         "strict": strict,
-        "partial": partial,
+        "char_f1": char_f1,
     }
 
 
