@@ -53,22 +53,6 @@ A prediction is considered correct if:
 
 This corresponds to **exact span matching**.
 
----
-
-## Partial Match
-
-A prediction is considered correct if:
-
-* the document identifier matches
-* the entity label matches
-* the predicted span **overlaps** the gold span
-
-Overlap condition:
-
-```
-max(start_gold, start_pred) < min(end_gold, end_pred)
-```
-
 Matching is **one-to-one**:
 
 * each gold annotation can match at most one prediction
@@ -82,6 +66,22 @@ The script reports:
 * True Positives (TP)
 * False Positives (FP)
 * False Negatives (FN)
+---
+
+## Character-Overlap F1
+
+This metric evaluates h**ow well predicted spans align with gold spans at the character level**, providing a smoother alternative to strict matching.
+
+For two spans, the **character-overlap F1** is computed as:
+
+* intersection = length of the overlapping character segment
+* recall = intersection / length_gold
+* precision = intersection / length_prediction
+* char_overlap_f1 = 2 * precision * recall / (precision + recall)
+
+If a gold entity has no overlapping prediction, its score is 0.
+If a prediction does not overlap any gold entity, its score is 0.
+Unlike strict matching, this metric does not enforce one-to-one matching between spans.
 
 ---
 
@@ -175,20 +175,19 @@ Example JSON output produced by the evaluation script:
 {
   "entity": "DISEASE",
   "strict": {
-    "precision": 0.8,
-    "recall": 0.6667,
-    "f1": 0.7273,
-    "tp": 4,
-    "fp": 1,
-    "fn": 2
-  },
-  "partial": {
-    "precision": 1.0,
-    "recall": 0.8333,
-    "f1": 0.9091,
-    "tp": 5,
-    "fp": 0,
+    "precision": 0.3333,
+    "recall": 0.5,
+    "f1": 0.4,
+    "tp": 1,
+    "fp": 2,
     "fn": 1
+  },
+  "char_f1": {
+    "precision": 0.6444,
+    "recall": 0.9667,
+    "f1": 0.7733,
+    "n_gold": 2,
+    "n_pred": 3
   }
 }
 ```
