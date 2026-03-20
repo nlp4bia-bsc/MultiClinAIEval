@@ -1,0 +1,17 @@
+{
+  "team": "NLP4BIA",
+  "model": "PlanTL-GOB-ES/roberta-base-biomedical-clinical-es",
+  "architecture": "Transformer + linear",
+  "language": ["es"],
+  "labels": "monolabel",
+  "scheme": "BIO",
+  "input_strategy": "sentence_window",
+  "window_size": 3,
+  "max_length": 256,
+  "epochs": 10,
+  "batch_size": 16,
+  "lr": 2e-5,
+  "seed": 42,
+  "decoding": "greedy",
+  "notes": "first test submission"
+}
