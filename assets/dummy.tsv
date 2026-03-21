@@ -2,6 +2,3 @@ filename	label	start_span	end_span	text
 doc1	DISEASE	10	18	diabetes
 doc2	DISEASE	5	12	influenza
 doc2	DISEASE	100	110	fake_disease
-doc1	SYMPTOM	40	45	fever
-doc1	PROCEDURE	60	67	biopsy
-doc2	PROCEDURE	50	57	x-ray
