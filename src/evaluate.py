@@ -127,7 +127,7 @@ def compute_strict_metric(gold_docs, pred_docs):
     fp = 0
     fn = 0
 
-    docs = set(gold_docs.keys()) | set(pred_docs.keys())
+    docs = set(gold_docs.keys())
 
     for d in docs:
 
