@@ -1,7 +1,3 @@
 file	entity	begin	end	content
 doc1	DISEASE	10	18	diabetes
-doc1	SYMPTOM	40	45	fever
-doc1	PROCEDURE	60	67	biopsy
 doc2	DISEASE	5	13	influenza
-doc2	SYMPTOM	30	38	headache
-doc2	PROCEDURE	50	57	x-ray
