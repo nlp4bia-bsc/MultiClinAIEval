@@ -22,9 +22,9 @@ Participants must identify and classify entities in clinical text using the foll
 
 | filename | label     | start_span | end_span | text     |
 | -------- | --------- | ---------- | -------- | -------- |
-| doc1.txt | DISEASE   | 10         | 18       | diabetes |
-| doc1.txt | SYMPTOM   | 40         | 45       | fever    |
-| doc1.txt | PROCEDURE | 60         | 67       | biopsy   |
+| doc1 | DISEASE   | 10         | 18       | diabetes |
+| doc1 | SYMPTOM   | 40         | 45       | fever    |
+| doc1 | PROCEDURE | 60         | 67       | biopsy   |
 
 Column description:
 
@@ -148,9 +148,7 @@ The prediction file must follow **exactly the same TSV format** as the gold stan
 
 ```
 filename	label	start_span	end_span	text
-doc1.txt	DISEASE	10	18	diabetes
-doc1.txt	SYMPTOM	40	45	fever
-doc1.txt	PROCEDURE	60	67	biopsy
+doc1	DISEASE	10	18	diabetes
 ```
 
 Required columns:
